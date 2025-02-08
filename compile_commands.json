@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/dylantettemer/Desktop/projects/VinylBytes/build/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/dylantettemer/Desktop/projects/VinylBytes/src/include  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -o CMakeFiles/main.dir/main.o -c /Users/dylantettemer/Desktop/projects/VinylBytes/src/main.cpp",
+  "file": "/Users/dylantettemer/Desktop/projects/VinylBytes/src/main.cpp",
+  "output": "CMakeFiles/main.dir/main.o"
+}
+]
