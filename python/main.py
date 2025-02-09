@@ -19,6 +19,8 @@ class SpotifyPlayer:
         }
 
         self.last_card_read = None
+        self.track_uris = list[str] 
+        self.device_id: Optional[str]
         
     def get_active_device(self) -> Optional[str]:
         """Get the first available Spotify device."""
@@ -34,8 +36,8 @@ class SpotifyPlayer:
         """Play top tracks from the given artist."""
         try:
             # Get device to play on
-            device_id = self.get_active_device()
-            if not device_id:
+            self.device_id = self.get_active_device()
+            if not self.device_id:
                 print("No available Spotify devices found")
                 return False
             
@@ -47,10 +49,10 @@ class SpotifyPlayer:
                     return False 
                 
                 # create list of track uris
-                track_uris = [track['uri'] for track in results['tracks'][:5]]
+                self.track_uris = [track['uri'] for track in results['tracks'][:100]]
             
             # Start playback
-                self.sp.start_playback(device_id=device_id, uris=track_uris)
+                self.sp.start_playback(device_id=self.device_id, uris=self.track_uris)
                 return True
 
             raise RuntimeError("No results found for artist") 
@@ -58,23 +60,27 @@ class SpotifyPlayer:
         except Exception as e:
             print(f"Error playing music: {str(e)}")
             return False
+    
+    def play_next_song(self) -> None:
+        self.sp.next_track(self.device_id)
+
     def run(self, rfid_scanner)-> None:
         while True:
             card_id, text = rfid_scanner.read_no_block()
-            if card_id and card_id != self.last_card_read:
-                print(f"Card ID: {card_id}")
+            artist_id = self.artist_mapping.get(str(card_id))
+            if not artist_id:
+                print("Artist ID not found within DB")
+
+            if card_id != self.last_card_read:
+                print(f"Playing new artist for ID: {card_id}")
                 self.last_card_read = card_id
-                artist_id = self.artist_mapping.get(str(card_id))
-                if artist_id:
-                    print(f"Playing music for card: {card_id}")
-                    if self.play_artist(artist_id):
-                        print("Playback started successfully")
-                    else:
-                        print("Failed to start playback")
+                print(f"Playing music for card: {card_id}")
+                if self.play_artist(artist_id):
+                    print("Playback started successfully")
                 else:
-                    print(f"Unknown card: {card_id}")
-                
-                time.sleep(0.1)  # Small delay to prevent CPU overhead
+                    print("Failed to start playback")
+            else:
+                self.play_next_song(artist_id) # pyright: ignore
 
 if __name__ == "__main__":
     player = SpotifyPlayer()

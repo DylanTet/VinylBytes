@@ -1,4 +1,4 @@
-#include <bcm2835.h>
+#include "../../include/bcm2835-1.73/src/bcm2835.h"
 
 class RFIDScanner {
 private:
